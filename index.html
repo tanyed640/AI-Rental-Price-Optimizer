@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Rental Price Optimizer</title>
+  <title>AI Rental Price Optimizer - Demo</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col items-center py-10">
@@ -38,12 +38,16 @@
     </ul>
 
     <div class="mt-6 flex justify-around">
-      <button class="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600" onclick="alert('API docs coming soon')">View API Docs</button>
-      <button id="chatbot-btn" class="bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">Try Chatbot</button>
+      <button id="api-docs-btn" class="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600">View API Docs</button>
+      <button id="chatbot-btn" class="bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">Try Chatbot Demo</button>
     </div>
   </div>
 
-  <!-- Chatbot Modal -->
+  <div class="text-sm text-gray-500 text-center mb-6">
+    <p>Monetization: Monthly subscription or per-property fee</p>
+    <p>Ideal clients: Landlords, property managers, investors</p>
+  </div>
+
   <div id="chatbot-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
     <div class="bg-white w-80 p-6 rounded-xl shadow-lg relative">
       <button class="absolute top-2 right-2 text-gray-600 hover:text-black" onclick="closeChatbot()">&times;</button>
@@ -51,6 +55,33 @@
       <div id="chat-log" class="border h-48 overflow-y-auto p-2 mb-4 bg-gray-50 text-sm"></div>
       <input id="chat-input" type="text" placeholder="Type your question..." class="w-full border p-2 rounded mb-2" />
       <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onclick="handleChat()">Send</button>
+    </div>
+  </div>
+
+  <div id="api-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white w-full max-w-lg p-6 rounded-xl shadow-lg overflow-y-auto max-h-[90vh] relative">
+      <button class="absolute top-2 right-2 text-gray-600 hover:text-black" onclick="closeApiDocs()">&times;</button>
+      <h2 class="text-xl font-bold mb-4 text-center">Rental Price Optimizer API Documentation</h2>
+      <p class="text-sm mb-4">Use our API to get real-time rental pricing suggestions based on comps, demand, and seasonality.</p>
+      <h3 class="font-semibold mb-2">Endpoint:</h3>
+      <code class="block mb-4 bg-gray-100 p-2 rounded text-xs">GET https://api.rentalboost.ai/price?zip=90210&bedrooms=2</code>
+      <h3 class="font-semibold mb-2">Parameters:</h3>
+      <ul class="list-disc list-inside text-sm mb-4">
+        <li><strong>zip</strong> (required) - 5-digit ZIP code</li>
+        <li><strong>bedrooms</strong> (required) - Number of bedrooms</li>
+      </ul>
+      <h3 class="font-semibold mb-2">Example Response:</h3>
+      <pre class="bg-gray-100 p-2 rounded text-xs mb-4">{
+  "recommended_rent": 4300,
+  "confidence": 95,
+  "seasonal_trend": "Peak Season"
+}</pre>
+      <h3 class="font-semibold mb-2">Notes:</h3>
+      <ul class="list-disc list-inside text-sm">
+        <li>API requires valid subscription key (contact support)</li>
+        <li>Response times typically &lt; 500ms</li>
+        <li>Supports short-term and long-term rental markets</li>
+      </ul>
     </div>
   </div>
 
@@ -99,22 +130,34 @@ document.getElementById('chatbot-btn').addEventListener('click', () => {
   document.getElementById('chat-log').innerHTML = '<p class="text-gray-500">Assistant: Hi there! Ask me anything about this rental property.</p>';
 });
 
+document.getElementById('api-docs-btn').addEventListener('click', () => {
+  document.getElementById('api-modal').classList.remove('hidden');
+});
+
 function closeChatbot() {
   document.getElementById('chatbot-modal').classList.add('hidden');
+}
+
+function closeApiDocs() {
+  document.getElementById('api-modal').classList.add('hidden');
 }
 
 function handleChat() {
   const input = document.getElementById('chat-input');
   const chatLog = document.getElementById('chat-log');
   const userMessage = input.value.trim();
-
   if (!userMessage) return;
 
   chatLog.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
+  let botReply = "Great question! Our pricing is optimized based on real market comps and seasonal demand.";
 
-  let botReply = "Good question! This rental is priced competitively based on current market data.";
-  if (userMessage.toLowerCase().includes("why")) botReply = "The suggested rent reflects local comps, demand trends, and seasonality.";
-  if (userMessage.toLowerCase().includes("negotiate")) botReply = "Rental prices are optimized for ROI but feel free to discuss terms with the landlord.";
+  const msg = userMessage.toLowerCase();
+  if (msg.includes("why")) botReply = "The price reflects similar rentals, demand, and seasonality in this ZIP.";
+  else if (msg.includes("negotiate")) botReply = "The suggested rent maximizes ROI, but you're welcome to discuss terms.";
+  else if (msg.includes("furnished")) botReply = "Fully furnished units may command higher rent, we adjust for that.";
+  else if (msg.includes("pet") || msg.includes("pets")) botReply = "Pet-friendly units often rent faster, small premium may apply.";
+  else if (msg.includes("utilities")) botReply = "Utilities are typically separate unless specified otherwise.";
+  else if (msg.includes("safe") || msg.includes("safety")) botReply = "We factor neighborhood demand, but recommend checking local safety resources.";
 
   chatLog.innerHTML += `<p class="text-gray-500">Assistant: ${botReply}</p>`;
   input.value = "";
