@@ -77,14 +77,27 @@
   </div>
 
 <script>
+// Demo rent data by ZIP code
 const demoData = {
   "90210": { base: 4200, season: "Peak Season", confidence: 95 },
   "10001": { base: 3300, season: "Moderate", confidence: 87 },
   "30301": { base: 2200, season: "Low Demand", confidence: 75 },
   "75001": { base: 2600, season: "Moderate", confidence: 82 },
   "60601": { base: 2800, season: "Peak Season", confidence: 90 },
+  "94536": { base: 3100, season: "Peak Season", confidence: 89 }, // Fremont
 };
 
+// City to ZIP mapping
+const cityZipMap = {
+  "fremont": "94536",
+  "beverly hills": "90210",
+  "new york": "10001",
+  "atlanta": "30301",
+  "addison": "75001",
+  "chicago": "60601"
+};
+
+// Rent suggestion handler (ZIP & bedrooms)
 document.getElementById('lookup-btn').addEventListener('click', () => {
   const zip = document.getElementById('zip-input').value.trim();
   const beds = parseInt(document.getElementById('beds-input').value);
@@ -98,59 +111,126 @@ document.getElementById('lookup-btn').addEventListener('click', () => {
     return;
   }
 
-  let price = 2500;
+  let price = 2500 + beds * 150;
   let season = "Moderate";
   let confidence = 80;
 
   if (demoData[zip]) {
-    price = demoData[zip].base + (beds * 150);
+    price = demoData[zip].base + beds * 150;
     season = demoData[zip].season;
     confidence = demoData[zip].confidence;
-  } else {
-    price += beds * 150;
   }
 
-  priceText.textContent = `$${price} / month`;
-  confidenceText.textContent = `Confidence: ${confidence}%`;
-  seasonText.textContent = `Seasonal Trend: ${season}`;
+  priceText.textContent = $${price} / month;
+  confidenceText.textContent = Confidence: ${confidence}%;
+  seasonText.textContent = Seasonal Trend: ${season};
   resultBox.classList.remove('hidden');
 });
 
+// Show chatbot modal
 document.getElementById('chatbot-btn').addEventListener('click', () => {
+  const now = new Date();
+  const hour = now.getHours();
+  let greeting = "Hi there!";
+
+  if (hour < 12) greeting = "Good morning!";
+  else if (hour < 18) greeting = "Good afternoon!";
+  else greeting = "Good evening!";
+
   document.getElementById('chatbot-modal').classList.remove('hidden');
-  document.getElementById('chat-log').innerHTML = '<p class="text-gray-500">Assistant: Hi there! Ask me anything about this rental property.</p>';
+  document.getElementById('chat-log').innerHTML = <p class="text-gray-500">Assistant: ${greeting} Ask me anything about this rental property or housing market!</p>;
 });
 
+// Close chatbot
 function closeChatbot() {
   document.getElementById('chatbot-modal').classList.add('hidden');
 }
 
+// Send on Enter key
+document.getElementById('chat-input').addEventListener('keypress', function (e) {
+  if (e.key === 'Enter') handleChat();
+});
+
+// Chat logic
 function handleChat() {
   const input = document.getElementById('chat-input');
   const chatLog = document.getElementById('chat-log');
   const userMessage = input.value.trim();
-
   if (!userMessage) return;
 
-  chatLog.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
+  chatLog.innerHTML += <p><strong>You:</strong> ${userMessage}</p>;
 
-  let botReply = "Good question! This rental is priced competitively based on current market data.";
-  const lowerMsg = userMessage.toLowerCase();
+  setTimeout(() => {
+    chatLog.innerHTML += <p class="text-gray-500"><em>Assistant is typing...</em></p>;
+    chatLog.scrollTop = chatLog.scrollHeight;
 
-  if (lowerMsg.includes("why")) botReply = "The suggested rent reflects local comps, demand trends, and seasonality.";
-  else if (lowerMsg.includes("negotiate")) botReply = "Rental prices are optimized for ROI but feel free to discuss terms with the landlord.";
-  else if (lowerMsg.includes("mortgage") || lowerMsg.includes("buy")) botReply = "Buying involves down payment, credit, and more. Would you like help calculating affordability?";
-  else if (lowerMsg.includes("crime")) botReply = "You can check local crime stats using neighborhoodscout.com or city-data.com.";
-  else if (lowerMsg.includes("school")) botReply = "GreatSchools and Niche.com can help with school ratings in the area.";
-  else if (lowerMsg.includes("pets")) botReply = "Pet policies vary by landlord. Be sure to check pet fees or restrictions.";
-  else if (lowerMsg.includes("trend")) botReply = "Rental trends are seasonal. Would you like a chart of historical averages?";
-  else if (lowerMsg.includes("zillow") || lowerMsg.includes("realtor")) botReply = "Zillow and Realtor.com are great, but I can explain listings or terms if you'd like.";
-  else if (lowerMsg.includes("agent")) botReply = "If you're looking for a real estate agent, I recommend starting with a licensed local professional.";
-  else if (lowerMsg.includes("rent too high")) botReply = "This price reflects market demand. If you're comparing, I can offer negotiation strategies.";
+    setTimeout(() => {
+      chatLog.innerHTML = chatLog.innerHTML.replace(/<p class=\"text-gray-500\"><em>Assistant is typing\\.\\.\\.<\\/em><\\/p>/, '');
+      const reply = generateReply(userMessage.toLowerCase());
+      chatLog.innerHTML += <p class="text-gray-500">Assistant: ${reply}</p>;
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }, 800);
+  }, 500);
 
-  chatLog.innerHTML += `<p class="text-gray-500">Assistant: ${botReply}</p>`;
   input.value = "";
-  chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+// Bot response engine with smart logic
+function generateReply(msg) {
+  for (const city in cityZipMap) {
+    if (msg.includes(city)) {
+      const zip = cityZipMap[city];
+      const data = demoData[zip];
+      if (data) {
+        return The average rent in ${capitalize(city)} is around $${data.base}/month. Seasonal Trend: ${data.season}, Confidence: ${data.confidence}%.;
+      }
+    }
+  }
+
+  if (msg.includes("price") || msg.includes("cost") || msg.includes("rent"))
+    return "Please tell me the city or ZIP code, and number of bedrooms, and I can give you a rent estimate!";
+
+  if (msg.includes("buy") || msg.includes("own") || msg.includes("mortgage"))
+    return "Buying a home depends on your credit score, down payment, and location. Would you like tips on getting started with a mortgage or first-time homebuyer advice?";
+
+  if (msg.includes("sell"))
+    return "If you're selling, location, condition, and timing matter most. Want tips on maximizing your home's value or pricing it competitively?";
+
+  if (msg.includes("negotiate"))
+    return "Yes, rental prices can often be negotiated, especially in off-peak seasons or with strong applications.";
+
+  if (msg.includes("utilities"))
+    return "Utilities vary by property. Some include water and trash, others may require tenants to cover everything.";
+
+  if (msg.includes("available") || msg.includes("vacant"))
+    return "This unit is currently listed as available. Want help contacting the property manager or scheduling a tour?";
+
+  if (msg.includes("pets"))
+    return "Pet policies vary. Some units charge pet rent or deposits. I recommend checking the listing details or asking the landlord.";
+
+  if (msg.includes("school") || msg.includes("neighborhood"))
+    return "You can check school ratings and neighborhood stats on sites like GreatSchools, Niche, or Realtor.com.";
+
+  if (msg.includes("crime"))
+    return "Safety is important! Check city-data.com or neighborhoodscout.com for crime statistics in the area you're researching.";
+
+  if (msg.includes("trend") || msg.includes("market"))
+    return "Real estate trends vary. Would you like data on recent price trends or buyer vs. seller market insights?";
+
+  if (msg.includes("agent") || msg.includes("realtor"))
+    return "Need a real estate agent? Let me know the city and I can recommend steps to find a licensed professional nearby.";
+
+  if (msg.includes("zillow") || msg.includes("redfin"))
+    return "Zillow and Redfin are great platforms to compare listings, but I can help you break down that info if you share a link!";
+
+  if (msg.includes("thank")) return "You're very welcome! Let me know if there's anything else I can help with.";
+
+  return "That’s a good question! Try asking about rent in a specific city, or anything else related to housing, real estate, or rentals.";
+}
+
+// Capitalize city name nicely
+function capitalize(str) {
+  return str.replace(/\b\w/g, c => c.toUpperCase());
 }
 </script>
 
