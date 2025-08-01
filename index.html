@@ -76,58 +76,6 @@
     </div>
   </div>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Rental Price Optimizer</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col items-center py-10">
-
-  <div class="bg-white shadow-lg rounded-xl p-8 max-w-md w-full mb-10">
-    <h1 class="text-2xl font-bold mb-4 text-center">AI Rental Price Optimizer</h1>
-    <p class="text-center mb-6">Enter property details to get dynamic AI-powered rent pricing suggestions.</p>
-
-    <input id="zip-input" type="text" maxlength="5" placeholder="Enter ZIP Code" class="w-full border border-gray-300 p-3 rounded mb-3" />
-    <input id="beds-input" type="number" min="0" placeholder="# of Bedrooms" class="w-full border border-gray-300 p-3 rounded mb-4" />
-    <button id="lookup-btn" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Get AI Price Suggestion</button>
-
-    <div id="result" class="mt-6 hidden bg-gray-100 p-4 rounded text-center">
-      <h2 class="text-xl font-semibold mb-2">Recommended Rent:</h2>
-      <p id="price" class="text-2xl font-bold text-green-600">$---</p>
-      <p id="confidence" class="mt-2 text-sm text-gray-700">Confidence: --%</p>
-      <p id="season" class="mt-2 text-sm text-gray-500">Seasonal Trend: --</p>
-    </div>
-  </div>
-
-  <div class="bg-white shadow-md rounded-xl p-8 max-w-xl w-full mb-10">
-    <h2 class="text-xl font-bold mb-4 text-center">What This Tool Does</h2>
-    <p class="text-gray-700 mb-4 text-center">Automatically analyzes comps, demand, and seasonality to suggest optimal rent pricing for landlords and Airbnb hosts.</p>
-    <h3 class="text-lg font-semibold mb-3">Key Features:</h3>
-    <ul class="list-disc list-inside text-sm space-y-2">
-      <li>✔️ Dynamic pricing API for STR/long-term platforms</li>
-      <li>✔️ "Rent Estimator" plugin for listings</li>
-      <li>✔️ AI Chatbot to justify rent to potential tenants</li>
-      <li>✔️ Market demand & seasonal adjustment logic</li>
-    </ul>
-    <div class="mt-6 flex justify-around">
-      <button class="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600" onclick="alert('API docs coming soon')">View API Docs</button>
-      <button id="chatbot-btn" class="bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">Try Chatbot</button>
-    </div>
-  </div>
-
-  <div id="chatbot-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-    <div class="bg-white w-80 p-6 rounded-xl shadow-lg relative">
-      <button class="absolute top-2 right-2 text-gray-600 hover:text-black" onclick="closeChatbot()">&times;</button>
-      <h2 class="text-lg font-bold mb-2 text-center">AI Leasing Assistant Chatbot</h2>
-      <div id="chat-log" class="border h-48 overflow-y-auto p-2 mb-4 bg-gray-50 text-sm"></div>
-      <input id="chat-input" type="text" placeholder="Type your question..." class="w-full border p-2 rounded mb-2" />
-      <button class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700" onclick="handleChat()">Send</button>
-    </div>
-  </div>
-
 <script>
 const demoData = {
   "90210": { base: 4200, season: "Peak Season", confidence: 95 },
@@ -210,5 +158,3 @@ function handleChat() {
 </html>
 
 
-</body>
-</html>
