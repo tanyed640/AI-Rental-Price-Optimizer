@@ -149,16 +149,25 @@ async function handleChat() {
   input.value = "";
 
   try {
-    const response = await fetch("https://rentalboost-chatbot-backend.onrender.com/chat", {
+    const res = await fetch("https://rentalboost-chatbot-backend.onrender.com/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({ message: userMessage })
     });
 
-    const data = await response.json();
-    chatLog.innerHTML += `<p class="text-gray-500">AI Assistant: ${data.reply}</p>`;
+    const data = await res.json();
+
+    if (data.reply) {
+      chatLog.innerHTML += `<p class="text-gray-500">AI Assistant: ${data.reply}</p>`;
+    } else {
+      chatLog.innerHTML += `<p class="text-gray-500">AI Assistant: Sorry, no response received.</p>`;
+    }
+
   } catch (err) {
-    chatLog.innerHTML += `<p class="text-red-600">Error: Could not connect to assistant. Try again later.</p>`;
+    console.error("Chatbot error:", err);
+    chatLog.innerHTML += `<p class="text-red-500">Error contacting server. Please try again later.</p>`;
   }
 
   chatLog.scrollTop = chatLog.scrollHeight;
@@ -166,12 +175,3 @@ async function handleChat() {
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
