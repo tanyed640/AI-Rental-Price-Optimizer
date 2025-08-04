@@ -162,12 +162,11 @@ async function handleChat() {
     if (data.reply) {
       chatLog.innerHTML += `<p class="text-gray-500">AI Assistant: ${data.reply}</p>`;
     } else {
-      chatLog.innerHTML += `<p class="text-gray-500">AI Assistant: Sorry, no response received.</p>`;
+      chatLog.innerHTML += `<p class="text-red-500">AI Assistant: Sorry, no response received.</p>`;
     }
-
   } catch (err) {
-    console.error("Chatbot error:", err);
-    chatLog.innerHTML += `<p class="text-red-500">Error contacting server. Please try again later.</p>`;
+    chatLog.innerHTML += `<p class="text-red-500">AI Assistant: Error connecting to server.</p>`;
+    console.error("Chat error:", err);
   }
 
   chatLog.scrollTop = chatLog.scrollHeight;
@@ -175,3 +174,4 @@ async function handleChat() {
 </script>
 </body>
 </html>
+
