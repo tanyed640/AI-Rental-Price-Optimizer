@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Rental Price Optimizer</title>
+  <title>AI Rental Price Optimizer - Demo</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col items-center py-10">
@@ -39,7 +39,7 @@
 
     <div class="mt-6 flex justify-around">
       <button id="api-docs-btn" class="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600">View API Docs</button>
-      <button id="chatbot-btn" class="bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">Try Chatbot</button>
+      <button id="chatbot-btn" class="bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">Try Chatbot Demo</button>
     </div>
   </div>
 
@@ -84,7 +84,16 @@
       </ul>
     </div>
   </div>
-  <script>
+
+<script>
+const demoData = {
+  "90210": { base: 4200, season: "Peak Season", confidence: 95 },
+  "10001": { base: 3300, season: "Moderate", confidence: 87 },
+  "30301": { base: 2200, season: "Low Demand", confidence: 75 },
+  "75001": { base: 2600, season: "Moderate", confidence: 82 },
+  "60601": { base: 2800, season: "Peak Season", confidence: 90 },
+};
+
 document.getElementById('lookup-btn').addEventListener('click', () => {
   const zip = document.getElementById('zip-input').value.trim();
   const beds = parseInt(document.getElementById('beds-input').value);
@@ -98,33 +107,27 @@ document.getElementById('lookup-btn').addEventListener('click', () => {
     return;
   }
 
-  let price = 2500 + (beds * 150);
+  let price = 2500;
   let season = "Moderate";
   let confidence = 80;
-
-  const demoData = {
-    "90210": { base: 4200, season: "Peak Season", confidence: 95 },
-    "10001": { base: 3300, season: "Moderate", confidence: 87 },
-    "30301": { base: 2200, season: "Low Demand", confidence: 75 },
-    "75001": { base: 2600, season: "Moderate", confidence: 82 },
-    "60601": { base: 2800, season: "Peak Season", confidence: 90 },
-  };
 
   if (demoData[zip]) {
     price = demoData[zip].base + (beds * 150);
     season = demoData[zip].season;
     confidence = demoData[zip].confidence;
+  } else {
+    price += beds * 150;
   }
 
-  priceText.textContent = `$${price} / month`;
-  confidenceText.textContent = `Confidence: ${confidence}%`;
-  seasonText.textContent = `Seasonal Trend: ${season}`;
+  priceText.textContent = $${price} / month;
+  confidenceText.textContent = Confidence: ${confidence}%;
+  seasonText.textContent = Seasonal Trend: ${season};
   resultBox.classList.remove('hidden');
 });
 
 document.getElementById('chatbot-btn').addEventListener('click', () => {
   document.getElementById('chatbot-modal').classList.remove('hidden');
-  document.getElementById('chat-log').innerHTML = '<p class="text-gray-500">AI Assistant: Hi there! Ask me anything about this rental property.</p>';
+  document.getElementById('chat-log').innerHTML = '<p class="text-gray-500">Assistant: Hi there! Ask me anything about this rental property.</p>';
 });
 
 document.getElementById('api-docs-btn').addEventListener('click', () => {
@@ -139,39 +142,28 @@ function closeApiDocs() {
   document.getElementById('api-modal').classList.add('hidden');
 }
 
-async function handleChat() {
+function handleChat() {
   const input = document.getElementById('chat-input');
   const chatLog = document.getElementById('chat-log');
   const userMessage = input.value.trim();
   if (!userMessage) return;
 
-  chatLog.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
+  chatLog.innerHTML += <p><strong>You:</strong> ${userMessage}</p>;
+  let botReply = "Great question! Our pricing is optimized based on real market comps and seasonal demand.";
+
+  const msg = userMessage.toLowerCase();
+  if (msg.includes("why")) botReply = "The price reflects similar rentals, demand, and seasonality in this ZIP.";
+  else if (msg.includes("negotiate")) botReply = "The suggested rent maximizes ROI, but you're welcome to discuss terms.";
+  else if (msg.includes("furnished")) botReply = "Fully furnished units may command higher rent, we adjust for that.";
+  else if (msg.includes("pet") || msg.includes("pets")) botReply = "Pet-friendly units often rent faster, small premium may apply.";
+  else if (msg.includes("utilities")) botReply = "Utilities are typically separate unless specified otherwise.";
+  else if (msg.includes("safe") || msg.includes("safety")) botReply = "We factor neighborhood demand, but recommend checking local safety resources.";
+
+  chatLog.innerHTML += <p class="text-gray-500">Assistant: ${botReply}</p>;
   input.value = "";
-
-  try {
-    const res = await fetch("https://rentalboost-chatbot-backend.onrender.com/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ message: userMessage })
-    });
-
-    const data = await res.json();
-
-    if (data.reply) {
-      chatLog.innerHTML += `<p class="text-gray-500">AI Assistant: ${data.reply}</p>`;
-    } else {
-      chatLog.innerHTML += `<p class="text-red-500">AI Assistant: Sorry, no response received.</p>`;
-    }
-  } catch (err) {
-    chatLog.innerHTML += `<p class="text-red-500">AI Assistant: Error connecting to server.</p>`;
-    console.error("Chat error:", err);
-  }
-
   chatLog.scrollTop = chatLog.scrollHeight;
 }
 </script>
+
 </body>
 </html>
-
